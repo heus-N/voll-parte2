@@ -1,3 +1,4 @@
+import { useState } from "react"
 import styled from "styled-components"
 
 const Campo = styled.input`
@@ -28,10 +29,11 @@ interface Props{
   tipo: string,
   placeholder: string,
   onChange: (value: string) => void,
-  label?: string
+  label?: string,
+  maxLength?: number
 }
 
-export default function CampoDigitacao({tipo, valor, placeholder, onChange, label} : Props) {
+export default function CampoDigitacao({tipo, valor, placeholder, onChange, label, maxLength} : Props) {
   return(
       <Container>
         <Rotulo>{label}</Rotulo>
@@ -41,6 +43,7 @@ export default function CampoDigitacao({tipo, valor, placeholder, onChange, labe
           placeholder={placeholder}
           onChange={(e) => onChange(e.target.value)}
           required
+          maxLength={maxLength}
         />
       </Container>
   )

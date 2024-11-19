@@ -1,6 +1,6 @@
 import { useState } from "react";
 import CampoDigitacao from "../../components/CampoDigitacao";
-import logo from "../../../src/components/Cabecalho/assets/logo.png"
+import logo from "../Login/logo.png"
 import styled from "styled-components";
 import Botao from "../../components/Botao";
 
