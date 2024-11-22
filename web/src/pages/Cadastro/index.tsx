@@ -4,6 +4,9 @@ import { Step, StepLabel, Stepper } from "@mui/material"
 import { useState } from "react"
 import CampoDigitacao from "../../components/CampoDigitacao"
 import Botao from "../../components/Botao"
+import IClinica from "../../types/IClinica"
+import usePost from "../usePost"
+import { useNavigate } from "react-router-dom"
 
 const ImagemLogo = styled.img`
 padding: 2em 0;
@@ -31,8 +34,11 @@ font-size: 24px;
 padding: 1em;
 `
 
-const Formulario = styled.section`
+const Formulario = styled.form`
 width: 70%;
+display: flex;
+flex-direction: column;
+align-items: center
 `
 
 const BotaoEstilizado = styled(Botao)`
@@ -56,8 +62,8 @@ padding-bottom: 2em;
 `
 
 export default function Cadastro(){
-  const [etapaAtiva, setEtapaAtiva] = useState(1);
-  const [nomeClinica, setNomeClinica] = useState('')
+  const [etapaAtiva, setEtapaAtiva] = useState(0);
+  const [nome, setNome] = useState('')
   const [cnpj, setCnpj] = useState('')
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
@@ -69,11 +75,37 @@ export default function Cadastro(){
   const [numero, setNumero] = useState('')
   const [complemento, setComplemento] = useState('')
   const [estado, setEstado] = useState('')
+  const {cadastrarDados, erro, sucesso} = usePost()
+  const navigate = useNavigate()
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    const clinica: IClinica ={
+      email: email,
+      nome: nome,
+      senha: senha,
+      endereco:{
+        cep: cep,
+        rua: rua,
+        numero: numero,
+        complemento: complemento,
+        estado: estado
+      }
+    }
+
+    if(etapaAtiva !== 0){
+      try{
+        cadastrarDados({url: 'clinica', dados: clinica})
+        navigate('/login')
+      }
+      catch(erro){
+        erro && alert('Erro ao cadastrar os dados')
+      }
+    }
+
     setEtapaAtiva(etapaAtiva + 1)
+
   }
   return (
     <>
@@ -98,12 +130,12 @@ export default function Cadastro(){
       {etapaAtiva === 0 ? (
         <>
         <Titulo>Primeiro, alguns dados básicos:</Titulo>
-        <Formulario>
+        <Formulario onSubmit={handleSubmit}>
           <CampoDigitacao 
-            valor={nomeClinica} 
+            valor={nome} 
             tipo="text" 
             placeholder="Digite o nome da clínica" 
-            onChange={setNomeClinica} 
+            onChange={setNome} 
             label="Nome"
           />
           <CampoDigitacao 
@@ -134,13 +166,13 @@ export default function Cadastro(){
             onChange={setConfirmaSenha} 
             label="Repita a senha"
           />
+        <BotaoEstilizado type="submit">Avançar</BotaoEstilizado>
         </Formulario>
-      <BotaoEstilizado type="submit">Avançar</BotaoEstilizado>
       </>
       ):(
       <>
         <Titulo>Agora, os dados técnicos</Titulo>
-        <Formulario>
+        <Formulario onSubmit={handleSubmit}>
           <CampoDigitacao 
             valor={telefone} 
             tipo="tel" 
@@ -183,8 +215,8 @@ export default function Cadastro(){
               onChange={setEstado}
             />
           </ContainerEndereco>
+          <BotaoEstilizado type="submit">Cadastrar</BotaoEstilizado>
         </Formulario>
-        <BotaoEstilizado type="submit">Cadastrar</BotaoEstilizado>
       </>
     )}
   </>
