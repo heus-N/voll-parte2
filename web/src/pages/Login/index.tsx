@@ -3,8 +3,9 @@ import CampoDigitacao from "../../components/CampoDigitacao";
 import logo from "../Login/logo.png"
 import styled from "styled-components";
 import Botao from "../../components/Botao";
+import usePost from "../usePost";
 
-const Container = styled.div`
+const Formulario = styled.form`
 display: flex;
 align-items: center;
 justify-content: center;
@@ -43,34 +44,57 @@ color: #339CFF;
 font-weight: 700;
 `
 
+interface ILogin {
+  email: string,
+  senha: string
+}
 
 export default function Login() {
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
+  const {cadastrarDados, erro, sucesso} = usePost();
+
+
+
+  const handleLogin = async(event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const usuario: ILogin = {
+      email: email,
+      senha: senha
+    }
+    try{
+      cadastrarDados({url: 'auth/login', dados: usuario})
+    }catch(erro){
+      erro && alert('Não foi possível fazer login')
+    }
+
+  }
 
   return (
-    <Container>
+    <>
       <ImagemLogo src={logo} alt="voll logo" />
       <Titulo> Faça login em sua conta </Titulo>
-      <CampoDigitacao 
-        valor={email} 
-        tipo="text" 
-        placeholder="Insira seu endereço de e-mail" 
-        onChange={setEmail} 
-        label="E-mail"
-      />
-      <CampoDigitacao 
-        valor={senha} 
-        tipo="password" 
-        placeholder="Insira sua senha" 
-        onChange={setSenha} 
-        label="Senha"
-      />
+      <Formulario onSubmit={handleLogin}>
+        <CampoDigitacao
+          valor={email}
+          tipo="text"
+          placeholder="Insira seu endereço de e-mail"
+          onChange={setEmail}
+          label="E-mail"
+        />
+        <CampoDigitacao
+          valor={senha}
+          tipo="password"
+          placeholder="Insira sua senha"
+          onChange={setSenha}
+          label="Senha"
+        />
       <BotaoLogin type="submit">Entrar</BotaoLogin>
+      </Formulario>
       <LinkEstilizadoSenha href="#">Esqueceu sua senha?</LinkEstilizadoSenha>
       <SpanEstilizado>Ainda não tem conta?
         <LinkEstizadoCadastro href="/cadastro"> Faça seu cadastro!</LinkEstizadoCadastro>
       </SpanEstilizado>
-    </Container>
+    </>
   )
 }
